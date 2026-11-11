@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porsche — Painel de Vendas</title>
+<style>
+  :root{
+    --preto:#000000; --grafite:#0e0e10; --cartao:#161618; --borda:#2a2a2e;
+    --vermelho:#D5001C; --cinza:#C9CACC; --cinza2:#8a8a8f; --branco:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--preto);color:var(--branco);font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1280px;margin:0 auto;padding:32px 28px 60px}
+  header{border-bottom:1px solid var(--borda);padding-bottom:24px;margin-bottom:28px}
+  .marca{display:flex;align-items:center;gap:14px}
+  .logo-quadrado{width:46px;height:46px;border:2px solid var(--vermelho);display:flex;align-items:center;justify-content:center;color:var(--vermelho);font-weight:800;font-size:22px;letter-spacing:-1px}
+  h1{font-size:28px;font-weight:700;letter-spacing:.5px}
+  h1 span{color:var(--vermelho)}
+  .sub{color:var(--cinza2);font-size:13px;margin-top:10px;letter-spacing:.4px}
+  .filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;background:var(--grafite);border:1px solid var(--borda);border-radius:10px;padding:18px;margin-bottom:26px}
+  .filtros label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--cinza2);display:block;margin-bottom:6px}
+  select,input[type=date]{width:100%;background:var(--cartao);color:var(--branco);border:1px solid var(--borda);border-radius:6px;padding:9px 10px;font-size:13px;outline:none}
+  select:focus,input[type=date]:focus{border-color:var(--vermelho)}
+  .btn-limpar{background:transparent;color:var(--vermelho);border:1px solid var(--vermelho);border-radius:6px;padding:9px 14px;font-size:12px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;align-self:end;transition:.2s}
+  .btn-limpar:hover{background:var(--vermelho);color:var(--branco)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:30px}
+  .kpi{background:var(--cartao);border:1px solid var(--borda);border-radius:10px;padding:20px 22px}
+  .kpi .rotulo{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--cinza2);margin-bottom:10px}
+  .kpi .valor{font-size:26px;font-weight:700}
+  .kpi .extra{font-size:11px;color:var(--cinza2);margin-top:6px}
+  .kpi.destaque{border-top:3px solid var(--vermelho)}
+  section{background:var(--grafite);border:1px solid var(--borda);border-radius:10px;padding:24px;margin-bottom:26px}
+  h2{font-size:17px;font-weight:700;letter-spacing:.3px;margin-bottom:4px}
+  h2::before{content:'';display:inline-block;width:10px;height:10px;background:var(--vermelho);margin-right:10px}
+  .pergunta{font-size:12px;color:var(--cinza2);margin-bottom:20px;margin-top:6px}
+  .barras{display:flex;flex-direction:column;gap:9px}
+  .barra-row{display:grid;grid-template-columns:150px 1fr 150px;align-items:center;gap:12px;font-size:13px}
+  .barra-nome{color:var(--cinza);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .barra-trilho{background:#0a0a0c;border-radius:4px;height:22px;position:relative}
+  .barra-fill{background:linear-gradient(90deg,var(--vermelho),#ff3b30);height:100%;border-radius:4px;min-width:3px;transition:width .4s}
+  .barra-valor{color:var(--branco);font-size:12px;white-space:nowrap}
+  .barra-valor small{color:var(--cinza2)}
+  .chart-area{display:flex;align-items:flex-end;gap:6px;height:240px;border-bottom:1px solid var(--borda);padding-bottom:2px}
+  .coluna{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0;height:100%}
+  .coluna-fill{background:var(--vermelho);width:78%;border-radius:3px 3px 0 0;transition:height .4s;position:relative}
+  .coluna-fill:hover{background:#ff3b30}
+  .coluna-rotulo{font-size:10px;color:var(--cinza2);margin-top:8px;white-space:nowrap;transform:rotate(-45deg);transform-origin:top left}
+  .tabela-scroll{max-height:420px;overflow-y:auto;border:1px solid var(--borda);border-radius:8px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{position:sticky;top:0;background:var(--cartao);color:var(--cinza2);font-size:11px;text-transform:uppercase;letter-spacing:1px;text-align:left;padding:12px 16px;border-bottom:1px solid var(--borda)}
+  tbody td{padding:11px 16px;border-bottom:1px solid #1c1c20}
+  tbody tr:hover{background:#1a1a1e}
+  .tag-modelo{color:var(--vermelho);font-weight:600}
+  .vazio{color:var(--cinza2);font-size:13px;padding:24px;text-align:center}
+  footer{border-top:1px solid var(--borda);padding-top:18px;margin-top:10px;color:var(--cinza2);font-size:11.5px;line-height:1.8}
+  .resumo-pq{margin-top:16px;background:var(--cartao);border-left:3px solid var(--vermelho);padding:14px 18px;font-size:13px;color:var(--cinza);border-radius:0 8px 8px 0}
+  .resumo-pq strong{color:var(--branco)}
+  @media(max-width:760px){.barra-row{grid-template-columns:110px 1fr 110px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="marca">
+      <div class="logo-quadrado">P</div>
+      <h1>Porsche <span>—</span> Painel de Vendas</h1>
+    </div>
+    <p class="sub">Análise executiva de vendas · Base saneada (100 registros) · Valores convertidos para R$ — taxa declarada R$ 5,5840/US$ (PTAX 10/11/2026)</p>
+  </header>
+
+  <div class="filtros">
+    <div><label for="f-modelo">Modelo</label><select id="f-modelo"><option value="">Todos</option></select></div>
+    <div><label for="f-ano">Ano modelo</label><select id="f-ano"><option value="">Todos</option></select></div>
+    <div><label for="f-cidade">Cidade</label><select id="f-cidade"><option value="">Todas</option></select></div>
+    <div><label for="f-metodo">Método de pagamento</label><select id="f-metodo"><option value="">Todos</option></select></div>
+    <div><label for="f-de">Período — de</label><input type="date" id="f-de"></div>
+    <div><label for="f-ate">Período — até</label><input type="date" id="f-ate"></div>
+    <button class="btn-limpar" id="btn-limpar">Limpar filtros</button>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi destaque"><div class="rotulo">Unidades vendidas</div><div class="valor" id="k-unidades">—</div><div class="extra" id="k-unidades-extra"></div></div>
+    <div class="kpi"><div class="rotulo">Receita total</div><div class="valor" id="k-receita">—</div><div class="extra" id="k-receita-extra"></div></div>
+    <div class="kpi"><div class="rotulo">Ticket médio</div><div class="valor" id="k-ticket">—</div><div class="extra">por unidade vendida</div></div>
+    <div class="kpi"><div class="rotulo">Cidades atendidas</div><div class="valor" id="k-cidades">—</div><div class="extra">no recorte atual</div></div>
+    <div class="kpi"><div class="rotulo">Modelos comercializados</div><div class="valor" id="k-modelos">—</div><div class="extra">no recorte atual</div></div>
+  </div>
+
+  <section>
+    <h2>PQ1 · Principais modelos vendidos por cidade</h2>
+    <p class="pergunta">Ranking dos modelos por volume de unidades vendidas, reativo ao filtro de cidade e aos demais filtros.</p>
+    <div class="barras" id="pq1"></div>
+    <div class="resumo-pq" id="pq1-resumo"></div>
+  </section>
+
+  <section>
+    <h2>PQ2 · Modelos vendidos por período</h2>
+    <p class="pergunta">Evolução mensal das unidades vendidas no período selecionado, com destaque do modelo líder de cada mês.</p>
+    <div style="overflow-x:auto"><div class="chart-area" id="pq2" style="min-width:700px"></div></div>
+    <div class="resumo-pq" id="pq2-resumo"></div>
+  </section>
+
+  <section>
+    <h2>PQ3 · Carro popular por cidade</h2>
+    <p class="pergunta">Modelo mais vendido em cada cidade do recorte (critério: maior volume de unidades; desempate por receita total).</p>
+    <div class="tabela-scroll" id="pq3"></div>
+  </section>
+
+  <footer>
+    Fonte dos dados: Porsche.xlsx (aba Sanitized, 100 registros), saneada em 11/11/2026 · Conversão cambial declarada: R$ 5,5840/US$ (PTAX 10/11/2026, Banco Central) ·
+    Registros com data inválida: 24, corrigidos a partir de arquivo fornecido pelo usuário, sem exclusões · Painel gerado em 11/11/2026.
+  </footer>
+</div>
+
+<script>
+const DADOS = [{"id": 6, "data": "2024-02-28", "modelo": "718 Cayman", "ano": 2022, "brl": 443928.0, "usd": 79500.0, "km": 9800, "metodo": "Credit Card", "cidade": "Boston", "estado": "MA", "status": "Delivered"}, {"id": 7, "data": "2024-03-14", "modelo": "911 Turbo S", "ano": 2024, "brl": 1312240.0, "usd": 235000.0, "km": 1200, "metodo": "Wire Transfer", "cidade": "Seattle", "estado": "WA", "status": "Delivered"}, {"id": 8, "data": "2024-04-18", "modelo": "Cayenne Coupe", "ano": 2023, "brl": 629596.0, "usd": 112750.0, "km": 6400, "metodo": "Financing", "cidade": "Austin", "estado": "TX", "status": "In Transit"}, {"id": 9, "data": "2024-07-30", "modelo": "Macan S", "ano": 2021, "brl": 384737.6, "usd": 68900.0, "km": 28, "metodo": "Cash", "cidade": "Denver", "estado": "CO", "status": "Pending"}, {"id": 10, "data": "2024-05-22", "modelo": "Taycan 4S", "ano": 2024, "brl": 675664.0, "usd": 121000.0, "km": 0, "metodo": "Bank Transfer", "cidade": "Los Angeles", "estado": "CA", "status": "Delivered"}, {"id": 11, "data": "2024-08-06", "modelo": "Panamera 4", "ano": 2023, "brl": 583528.0, "usd": 104500.0, "km": 14500, "metodo": "Credit Card", "cidade": "Miami", "estado": "FL", "status": "Cancelled"}, {"id": 12, "data": "2024-07-11", "modelo": "911 Carrera S", "ano": 2020, "brl": 537739.2, "usd": 96300.0, "km": 41000, "metodo": "Lease", "cidade": "New York", "estado": "NY", "status": "Delivered"}, {"id": 13, "data": "2024-07-15", "modelo": "Cayenne E-Hybrid", "ano": 2022, "brl": 501164.0, "usd": 89750.0, "km": 11744, "metodo": "Wire Transfer", "cidade": "San Diego", "estado": "CA", "status": "Pending Approval"}, {"id": 14, "data": "2024-08-19", "modelo": "718 Boxster", "ano": 2021, "brl": 410424.0, "usd": 73500.0, "km": 22300, "metodo": "Debit Card", "cidade": "Chicago", "estado": "IL", "status": "Shipped"}, {"id": 15, "data": "2024-09-02", "modelo": "Macan GTS", "ano": 2024, "brl": 530480.0, "usd": 95000.0, "km": 3500, "metodo": "Financing", "cidade": "Phoenix", "estado": "AZ", "status": "In Transit"}, {"id": 16, "data": "2024-09-17", "modelo": "Taycan Turbo", "ano": 2023, "brl": 855471.59, "usd": 153200.5, "km": 11, "metodo": "ACH Payment", "cidade": "Dallas", "estado": "TX", "status": "Delivered"}, {"id": 17, "data": "2024-10-04", "modelo": "911 GT3", "ano": 2024, "brl": 1345744.0, "usd": 241000.0, "km": 750, "metodo": "Wire Transfer", "cidade": "Las Vegas", "estado": "NV", "status": "Pending"}, {"id": 18, "data": "2024-05-11", "modelo": "Panamera Turbo S", "ano": 2022, "brl": 737088.0, "usd": 132000.0, "km": 19250, "metodo": "Cash", "cidade": "San Jose", "estado": "CA", "status": "Delivered"}, {"id": 19, "data": "2024-12-12", "modelo": "Cayenne Turbo GT", "ano": 2024, "brl": 1049792.0, "usd": 188000.0, "km": 2100, "metodo": "Crypto Payment", "cidade": "Houston", "estado": "TX", "status": "Awaiting Delivery"}, {"id": 20, "data": "2024-12-25", "modelo": "911 Carrera Cabriolet", "ano": 2023, "brl": 713635.2, "usd": 127800.0, "km": 12000, "metodo": "Credit Card", "cidade": "Atlanta", "estado": "GA", "status": "Delivered"}, {"id": 21, "data": "2025-01-06", "modelo": "Macan", "ano": 2021, "brl": 328897.6, "usd": 58900.0, "km": 33700, "metodo": "Bank Transfer", "cidade": "Orlando", "estado": "FL", "status": "Pending"}, {"id": 22, "data": "2025-01-23", "modelo": "718 Spyder RS", "ano": 2024, "brl": 915776.0, "usd": 164000.0, "km": 900, "metodo": "Financing", "cidade": "Portland", "estado": "OR", "status": "In Transit"}, {"id": 23, "data": "2025-02-14", "modelo": "Taycan Cross Turismo", "ano": 2023, "brl": 661704.0, "usd": 118500.0, "km": 7800, "metodo": "Wire Transfer", "cidade": "Charlotte", "estado": "NC", "status": "Delivered"}, {"id": 24, "data": "2025-02-28", "modelo": "Cayenne S", "ano": 2022, "brl": 509819.2, "usd": 91300.0, "km": 16000, "metodo": "Credit Card", "cidade": "Nashville", "estado": "TN", "status": "Pending"}, {"id": 25, "data": "2025-03-21", "modelo": "911 Targa 4S", "ano": 2024, "brl": 886460.0, "usd": 158750.0, "km": 2500, "metodo": "Lease", "cidade": "Minneapolis", "estado": "MN", "status": "Delivered"}, {"id": 26, "data": "2025-03-28", "modelo": "Panamera", "ano": 2020, "brl": 402048.0, "usd": 72000.0, "km": 49000, "metodo": "Bank Transfer", "cidade": "Philadelphia", "estado": "PA", "status": "Cancelled"}, {"id": 27, "data": "2025-04-09", "modelo": "Macan Electric", "ano": 2025, "brl": 483016.0, "usd": 86500.0, "km": 0, "metodo": "Wire Transfer", "cidade": "San Antonio", "estado": "TX", "status": "Delivered"}, {"id": 28, "data": "2025-04-30", "modelo": "911 Dakar", "ano": 2024, "brl": 1507680.0, "usd": 270000.0, "km": 1050, "metodo": "Cash", "cidade": "Salt Lake City", "estado": "UT", "status": "Awaiting Pickup"}, {"id": 29, "data": "2025-05-12", "modelo": "Taycan GTS", "ano": 2023, "brl": 776176.0, "usd": 139000.0, "km": 6250, "metodo": "Financing", "cidade": "Raleigh", "estado": "NC", "status": "In Transit"}, {"id": 30, "data": "2025-06-18", "modelo": "Cayenne", "ano": 2021, "brl": 428851.2, "usd": 76800.0, "km": 38400, "metodo": "Credit Card", "cidade": "Detroit", "estado": "MI", "status": "Delivered"}, {"id": 31, "data": "2025-06-30", "modelo": "718 Cayman GT4 RS", "ano": 2024, "brl": 969382.4, "usd": 173600.0, "km": 400, "metodo": "Wire Transfer", "cidade": "Columbus", "estado": "OH", "status": "Pending"}, {"id": 32, "data": "2025-07-07", "modelo": "911 Carrera GTS", "ano": 2022, "brl": 669521.6, "usd": 119900.0, "km": 13600, "metodo": "Cash", "cidade": "Indianapolis", "estado": "IN", "status": "Delivered"}, {"id": 33, "data": "2025-07-22", "modelo": "Panamera 4 E-Hybrid", "ano": 2023, "brl": 610052.0, "usd": 109250.0, "km": 8900, "metodo": "Lease", "cidade": "Fort Worth", "estado": "TX", "status": "In Transit"}, {"id": 34, "data": "2025-08-14", "modelo": "Macan T", "ano": 2022, "brl": 457888.0, "usd": 82000.0, "km": 21750, "metodo": "Wire Transfer", "cidade": "Jacksonville", "estado": "FL", "status": "Delivered"}, {"id": 35, "data": "2025-09-01", "modelo": "Taycan Turbo S", "ano": 2025, "brl": 1194976.0, "usd": 214000.0, "km": 0, "metodo": "Crypto Payment", "cidade": "San Diego", "estado": "CA", "status": "Pending Review"}, {"id": 36, "data": "2025-09-30", "modelo": "911 Carrera", "ano": 2024, "brl": 695208.0, "usd": 124500.0, "km": 4800, "metodo": "Credit Card", "cidade": "Tampa", "estado": "FL", "status": "Delivered"}, {"id": 37, "data": "2025-09-18", "modelo": "Cayenne S", "ano": 2023, "brl": 548348.8, "usd": 98200.0, "km": 12200, "metodo": "Bank Transfer", "cidade": "Sacramento", "estado": "CA", "status": "Pending"}, {"id": 38, "data": "2025-10-04", "modelo": "Macan", "ano": 2022, "brl": 376920.0, "usd": 67500.0, "km": 24100, "metodo": "Financing", "cidade": "Cleveland", "estado": "OH", "status": "Delivered"}, {"id": 39, "data": "2025-10-12", "modelo": "Taycan", "ano": 2025, "brl": 652769.6, "usd": 116900.0, "km": 0, "metodo": "Wire Transfer", "cidade": "Milwaukee", "estado": "WI", "status": "In Transit"}, {"id": 40, "data": "2025-10-29", "modelo": "Panamera 4S", "ano": 2024, "brl": 625408.0, "usd": 112000.0, "km": 10, "metodo": "Cash", "cidade": "Kansas City", "estado": "MO", "status": "Delivered"}, {"id": 41, "data": "2025-02-11", "modelo": "718 Boxster", "ano": 2021, "brl": 413216.0, "usd": 74000.0, "km": 31000, "metodo": "Debit Card", "cidade": "Omaha", "estado": "NE", "status": "Cancelled"}, {"id": 42, "data": "2025-11-16", "modelo": "911 Turbo", "ano": 2024, "brl": 1107307.2, "usd": 198300.0, "km": 2400, "metodo": "Wire Transfer", "cidade": "Albuquerque", "estado": "NM", "status": "Awaiting Delivery"}, {"id": 43, "data": "2025-11-18", "modelo": "Cayenne Coupe", "ano": 2023, "brl": 579340.0, "usd": 103750.0, "km": 6773, "metodo": "Wire Transfer", "cidade": "Tucson", "estado": "AZ", "status": "Pending Approval"}, {"id": 44, "data": "2025-11-30", "modelo": "Macan GTS", "ano": 2024, "brl": 522662.4, "usd": 93600.0, "km": 5800, "metodo": "Financing", "cidade": "Fresno", "estado": "CA", "status": "Shipped"}, {"id": 45, "data": "2025-12-07", "modelo": "Taycan 4S", "ano": 2025, "brl": 720336.0, "usd": 129000.0, "km": 0, "metodo": "ACH Payment", "cidade": "Virginia Beach", "estado": "VA", "status": "In Transit"}, {"id": 46, "data": "2025-12-22", "modelo": "Panamera Turbo", "ano": 2022, "brl": 759424.0, "usd": 136000.0, "km": 18400, "metodo": "Credit Card", "cidade": "Colorado Springs", "estado": "CO", "status": "Delivered"}, {"id": 47, "data": "2025-12-04", "modelo": "911 GT3 RS", "ano": 2024, "brl": 1599816.0, "usd": 286500.0, "km": 700, "metodo": "Wire Transfer", "cidade": "Arlington", "estado": "TX", "status": "Pending"}, {"id": 48, "data": "2026-01-08", "modelo": "Cayenne E-Hybrid", "ano": 2023, "brl": 518195.2, "usd": 92800.0, "km": 15000, "metodo": "Lease", "cidade": "Bakersfield", "estado": "CA", "status": "Delivered"}, {"id": 49, "data": "2026-01-15", "modelo": "Macan T", "ano": 2022, "brl": 404281.6, "usd": 72400.0, "km": 19750, "metodo": "Cash", "cidade": "Mesa", "estado": "AZ", "status": "Awaiting Pickup"}, {"id": 50, "data": "2026-01-28", "modelo": "Taycan Turbo", "ano": 2025, "brl": 885064.0, "usd": 158500.0, "km": 3200, "metodo": "Crypto Payment", "cidade": "Atlanta", "estado": "GA", "status": "Delivered"}, {"id": 51, "data": "2026-02-03", "modelo": "718 Cayman", "ano": 2021, "brl": 390321.6, "usd": 69900.0, "km": 27600, "metodo": "Bank Transfer", "cidade": "Long Beach", "estado": "CA", "status": "Pending"}, {"id": 52, "data": "2026-02-28", "modelo": "911 Targa 4", "ano": 2024, "brl": 788740.0, "usd": 141250.0, "km": 2100, "metodo": "Financing", "cidade": "Oakland", "estado": "CA", "status": "In Transit"}, {"id": 53, "data": "2026-02-19", "modelo": "Panamera", "ano": 2020, "brl": 399256.0, "usd": 71500.0, "km": 52000, "metodo": "Wire Transfer", "cidade": "Tulsa", "estado": "OK", "status": "Delivered"}, {"id": 54, "data": "2026-02-25", "modelo": "Cayenne Turbo", "ano": 2023, "brl": 819731.2, "usd": 146800.0, "km": 11300, "metodo": "Credit Card", "cidade": "Wichita", "estado": "KS", "status": "Pending"}, {"id": 55, "data": "2026-03-01", "modelo": "Macan Electric", "ano": 2025, "brl": 500884.8, "usd": 89700.0, "km": 0, "metodo": "Lease", "cidade": "New Orleans", "estado": "LA", "status": "Delivered"}, {"id": 56, "data": "2026-03-14", "modelo": "911 Carrera S", "ano": 2022, "brl": 584086.4, "usd": 104600.0, "km": 15900, "metodo": "Bank Transfer", "cidade": "Honolulu", "estado": "HI", "status": "Cancelled"}, {"id": 57, "data": "2026-03-30", "modelo": "Taycan GTS", "ano": 2024, "brl": 792928.0, "usd": 142000.0, "km": 6600, "metodo": "Wire Transfer", "cidade": "Anaheim", "estado": "CA", "status": "Delivered"}, {"id": 58, "data": "2026-04-08", "modelo": "Cayenne", "ano": 2021, "brl": 437785.6, "usd": 78400.0, "km": 40250, "metodo": "Cash", "cidade": "Henderson", "estado": "NV", "status": "Awaiting Review"}, {"id": 59, "data": "2026-08-31", "modelo": "718 Spyder RS", "ano": 2025, "brl": 943696.0, "usd": 169000.0, "km": 850, "metodo": "Financing", "cidade": "Lexington", "estado": "KY", "status": "In Transit"}, {"id": 60, "data": "2026-04-21", "modelo": "911 Dakar", "ano": 2024, "brl": 1501537.6, "usd": 268900.0, "km": 1400, "metodo": "Credit Card", "cidade": "Riverside", "estado": "CA", "status": "Delivered"}, {"id": 61, "data": "2026-04-29", "modelo": "Panamera 4", "ano": 2023, "brl": 565659.2, "usd": 101300.0, "km": 12700, "metodo": "Wire Transfer", "cidade": "Corpus Christi", "estado": "TX", "status": "Pending"}, {"id": 62, "data": "2026-05-05", "modelo": "Macan S", "ano": 2021, "brl": 372732.0, "usd": 66750.0, "km": 29800, "metodo": "Cash", "cidade": "St. Louis", "estado": "MO", "status": "Delivered"}, {"id": 63, "data": "2026-05-14", "modelo": "Taycan Cross Turismo", "ano": 2024, "brl": 714193.6, "usd": 127900.0, "km": 7500, "metodo": "Lease", "cidade": "Pittsburgh", "estado": "PA", "status": "In Transit"}, {"id": 64, "data": "2026-05-23", "modelo": "Cayenne Turbo GT", "ano": 2025, "brl": 1116800.0, "usd": 200000.0, "km": 1950, "metodo": "Wire Transfer", "cidade": "Cincinnati", "estado": "OH", "status": "Delivered"}, {"id": 65, "data": "2026-06-02", "modelo": "911 Carrera Cabriolet", "ano": 2023, "brl": 737088.0, "usd": 132000.0, "km": 8800, "metodo": "Crypto Payment", "cidade": "Anchorage", "estado": "AK", "status": "Pending Review"}, {"id": 66, "data": "2026-06-15", "modelo": "718 Cayman GT4 RS", "ano": 2024, "brl": 985017.6, "usd": 176400.0, "km": 600, "metodo": "Credit Card", "cidade": "Plano", "estado": "TX", "status": "Delivered"}, {"id": 67, "data": "2026-06-30", "modelo": "Panamera 4 E-Hybrid", "ano": 2022, "brl": 605864.0, "usd": 108500.0, "km": 16200, "metodo": "Bank Transfer", "cidade": "Newark", "estado": "NJ", "status": "Cancelled"}, {"id": 68, "data": "2026-07-07", "modelo": "Macan", "ano": 2021, "brl": 329456.0, "usd": 59000.0, "km": 36000, "metodo": "Financing", "cidade": "Greensboro", "estado": "NC", "status": "Awaiting Delivery"}, {"id": 69, "data": "2026-07-20", "modelo": "Taycan Turbo S", "ano": 2025, "brl": 1217312.0, "usd": 218000.0, "km": 0, "metodo": "Wire Transfer", "cidade": "Lincoln", "estado": "NE", "status": "Pending"}, {"id": 70, "data": "2026-07-31", "modelo": "Cayenne S", "ano": 2024, "brl": 558120.8, "usd": 99950.0, "km": 5300, "metodo": "Debit Card", "cidade": "Jersey City", "estado": "NJ", "status": "Delivered"}, {"id": 71, "data": "2026-04-08", "modelo": "911 Carrera GTS", "ano": 2024, "brl": 679852.0, "usd": 121750.0, "km": 5872, "metodo": "Credit Card", "cidade": "Chandler", "estado": "AZ", "status": "Delivered"}, {"id": 72, "data": "2026-08-18", "modelo": "718 Boxster GTS", "ano": 2023, "brl": 510936.0, "usd": 91500.0, "km": 13300, "metodo": "Lease", "cidade": "Reno", "estado": "NV", "status": "Shipped"}, {"id": 73, "data": "2026-08-31", "modelo": "Panamera Turbo S", "ano": 2022, "brl": 748256.0, "usd": 134000.0, "km": 20100, "metodo": "Wire Transfer", "cidade": "Buffalo", "estado": "NY", "status": "In Transit"}, {"id": 74, "data": "2026-09-09", "modelo": "Macan GTS", "ano": 2024, "brl": 540531.2, "usd": 96800.0, "km": 0, "metodo": "ACH Payment", "cidade": "Durham", "estado": "NC", "status": "Delivered"}, {"id": 75, "data": "2026-09-17", "modelo": "Taycan 4S", "ano": 2025, "brl": 734854.4, "usd": 131600.0, "km": 2900, "metodo": "Wire Transfer", "cidade": "Laredo", "estado": "TX", "status": "Pending Approval"}, {"id": 76, "data": "2026-09-28", "modelo": "Cayenne E-Hybrid", "ano": 2023, "brl": 526571.2, "usd": 94300.0, "km": 13100, "metodo": "Cash", "cidade": "Madison", "estado": "WI", "status": "Delivered"}, {"id": 77, "data": "2026-10-06", "modelo": "911 Turbo S", "ano": 2025, "brl": 1351328.0, "usd": 242000.0, "km": 1100, "metodo": "Crypto Payment", "cidade": "Lubbock", "estado": "TX", "status": "Awaiting Pickup"}, {"id": 78, "data": "2026-10-16", "modelo": "718 Cayman S", "ano": 2022, "brl": 462076.0, "usd": 82750.0, "km": 22500, "metodo": "Credit Card", "cidade": "Toledo", "estado": "OH", "status": "Cancelled"}, {"id": 79, "data": "2026-10-29", "modelo": "Macan Electric", "ano": 2026, "brl": 509819.2, "usd": 91300.0, "km": 0, "metodo": "Wire Transfer", "cidade": "Irvine", "estado": "CA", "status": "Delivered"}, {"id": 80, "data": "2026-11-03", "modelo": "Panamera", "ano": 2021, "brl": 446161.6, "usd": 79900.0, "km": 44800, "metodo": "Financing", "cidade": "Garland", "estado": "TX", "status": "Pending"}, {"id": 81, "data": "2026-11-30", "modelo": "Cayenne Coupe", "ano": 2024, "brl": 619824.0, "usd": 111000.0, "km": 6700, "metodo": "Bank Transfer", "cidade": "Irving", "estado": "TX", "status": "In Transit"}, {"id": 82, "data": "2026-12-11", "modelo": "911 Targa 4S", "ano": 2023, "brl": 873896.0, "usd": 156500.0, "km": 4200, "metodo": "Cash", "cidade": "Chesapeake", "estado": "VA", "status": "Delivered"}, {"id": 83, "data": "2026-12-24", "modelo": "Taycan", "ano": 2025, "brl": 669521.6, "usd": 119900.0, "km": 1250, "metodo": "Lease", "cidade": "Scottsdale", "estado": "AZ", "status": "Pending"}, {"id": 84, "data": "2026-12-03", "modelo": "Macan T", "ano": 2022, "brl": 408748.8, "usd": 73200.0, "km": 18600, "metodo": "Wire Transfer", "cidade": "Norfolk", "estado": "VA", "status": "Delivered"}, {"id": 85, "data": "2026-12-28", "modelo": "911 GT3", "ano": 2024, "brl": 1250816.0, "usd": 224000.0, "km": 3000, "metodo": "Wire Transfer", "cidade": "Boise", "estado": "ID", "status": "Awaiting Delivery"}, {"id": 86, "data": "2027-01-15", "modelo": "911 Carrera", "ano": 2024, "brl": 708609.6, "usd": 126900.0, "km": 7200, "metodo": "Credit Card", "cidade": "Orlando", "estado": "FL", "status": "Delivered"}, {"id": 87, "data": "2027-01-29", "modelo": "Cayenne", "ano": 2023, "brl": 471848.0, "usd": 84500.0, "km": 21400, "metodo": "Bank Transfer", "cidade": "San Jose", "estado": "CA", "status": "Pending"}, {"id": 88, "data": "2027-02-11", "modelo": "Macan S", "ano": 2022, "brl": 389763.2, "usd": 69800.0, "km": 26300, "metodo": "Financing", "cidade": "Tampa", "estado": "FL", "status": "Delivered"}, {"id": 89, "data": "2027-02-28", "modelo": "Taycan 4S", "ano": 2025, "brl": 740996.8, "usd": 132700.0, "km": 0, "metodo": "Wire Transfer", "cidade": "Denver", "estado": "CO", "status": "In Transit"}, {"id": 90, "data": "2027-03-05", "modelo": "Panamera", "ano": 2021, "brl": 452304.0, "usd": 81000.0, "km": 42, "metodo": "Cash", "cidade": "Austin", "estado": "TX", "status": "Delivered"}, {"id": 91, "data": "2027-03-18", "modelo": "718 Cayman", "ano": 2023, "brl": 440577.6, "usd": 78900.0, "km": 17500, "metodo": "Debit Card", "cidade": "Seattle", "estado": "WA", "status": "Cancelled"}, {"id": 92, "data": "2027-04-02", "modelo": "911 Turbo S", "ano": 2026, "brl": 1392091.2, "usd": 249300.0, "km": 900, "metodo": "Wire Transfer", "cidade": "Boston", "estado": "MA", "status": "Awaiting Delivery"}, {"id": 93, "data": "2027-04-15", "modelo": "Cayenne Coupe", "ano": 2024, "brl": 607260.0, "usd": 108750.0, "km": 5530, "metodo": "Wire Transfer", "cidade": "Phoenix", "estado": "AZ", "status": "Pending Approval"}, {"id": 94, "data": "2027-04-30", "modelo": "Macan Electric", "ano": 2026, "brl": 517078.4, "usd": 92600.0, "km": 0, "metodo": "Financing", "cidade": "Chicago", "estado": "IL", "status": "Shipped"}, {"id": 95, "data": "2027-05-12", "modelo": "Taycan Turbo", "ano": 2025, "brl": 915776.0, "usd": 164000.0, "km": 0, "metodo": "ACH Payment", "cidade": "Dallas", "estado": "TX", "status": "In Transit"}, {"id": 96, "data": "2027-05-27", "modelo": "Panamera 4S", "ano": 2024, "brl": 664496.0, "usd": 119000.0, "km": 13400, "metodo": "Credit Card", "cidade": "San Francisco", "estado": "CA", "status": "Delivered"}, {"id": 97, "data": "2027-06-04", "modelo": "911 GT3", "ano": 2026, "brl": 1298280.0, "usd": 232500.0, "km": 1700, "metodo": "Wire Transfer", "cidade": "Las Vegas", "estado": "NV", "status": "Pending"}, {"id": 98, "data": "2027-06-18", "modelo": "Cayenne E-Hybrid", "ano": 2023, "brl": 540531.2, "usd": 96800.0, "km": 14000, "metodo": "Lease", "cidade": "Charlotte", "estado": "NC", "status": "Delivered"}, {"id": 99, "data": "2027-07-03", "modelo": "Macan T", "ano": 2022, "brl": 415449.6, "usd": 74400.0, "km": 20750, "metodo": "Cash", "cidade": "Mesa", "estado": "AZ", "status": "Awaiting Pickup"}, {"id": 100, "data": "2027-07-22", "modelo": "Taycan GTS", "ano": 2025, "brl": 829224.0, "usd": 148500.0, "km": 5200, "metodo": "Crypto Payment", "cidade": "Atlanta", "estado": "GA", "status": "Delivered"}, {"id": 101, "data": "2027-08-08", "modelo": "718 Boxster", "ano": 2021, "brl": 401489.6, "usd": 71900.0, "km": 29600, "metodo": "Bank Transfer", "cidade": "Long Beach", "estado": "CA", "status": "Pending"}, {"id": 102, "data": "2027-08-31", "modelo": "911 Targa 4", "ano": 2024, "brl": 799908.0, "usd": 143250.0, "km": 3100, "metodo": "Financing", "cidade": "Oakland", "estado": "CA", "status": "In Transit"}, {"id": 103, "data": "2027-09-19", "modelo": "Panamera Turbo", "ano": 2020, "brl": 767800.0, "usd": 137500.0, "km": 48000, "metodo": "Wire Transfer", "cidade": "Tulsa", "estado": "OK", "status": "Delivered"}, {"id": 104, "data": "2027-09-25", "modelo": "Cayenne Turbo GT", "ano": 2025, "brl": 1143603.2, "usd": 204800.0, "km": 3300, "metodo": "Credit Card", "cidade": "Wichita", "estado": "KS", "status": "Pending"}, {"id": 105, "data": "2027-10-01", "modelo": "911 Dakar", "ano": 2024, "brl": 1517172.8, "usd": 271700.0, "km": 1050, "metodo": "Lease", "cidade": "New Orleans", "estado": "LA", "status": "Delivered"}];
+const BRL = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+const fmt = v => BRL.format(v);
+const num = v => v.toLocaleString('pt-BR');
+
+function opcoes(campo){
+  return [...new Set(DADOS.map(d=>d[campo]))].sort((a,b)=>String(a).localeCompare(String(b),'pt-BR'));
+}
+function preencher(id, valores){
+  const el = document.getElementById(id);
+  valores.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;el.appendChild(o);});
+}
+preencher('f-modelo', opcoes('modelo'));
+preencher('f-ano', opcoes('ano').sort());
+preencher('f-cidade', opcoes('cidade'));
+preencher('f-metodo', opcoes('metodo'));
+
+function filtrar(){
+  const m=document.getElementById('f-modelo').value, a=document.getElementById('f-ano').value,
+        c=document.getElementById('f-cidade').value, p=document.getElementById('f-metodo').value,
+        de=document.getElementById('f-de').value, ate=document.getElementById('f-ate').value;
+  return DADOS.filter(d=>
+    (!m||d.modelo===m)&&(!a||String(d.ano)===a)&&(!c||d.cidade===c)&&(!p||d.metodo===p)&&
+    (!de||d.data>=de)&&(!ate||d.data<=ate));
+}
+
+function atualizar(){
+  const f = filtrar();
+  // KPIs
+  document.getElementById('k-unidades').textContent = num(f.length);
+  document.getElementById('k-unidades-extra').textContent = f.length===100?'base completa':'de 100 registros na base';
+  const rec = f.reduce((s,d)=>s+d.brl,0);
+  document.getElementById('k-receita').textContent = fmt(rec);
+  document.getElementById('k-receita-extra').textContent = 'US$ '+num(Math.round(f.reduce((s,d)=>s+d.usd,0)))+' na origem';
+  document.getElementById('k-ticket').textContent = f.length?fmt(rec/f.length):'—';
+  document.getElementById('k-cidades').textContent = new Set(f.map(d=>d.cidade)).size;
+  document.getElementById('k-modelos').textContent = new Set(f.map(d=>d.modelo)).size;
+
+  // PQ1
+  const porModelo = {};
+  f.forEach(d=>{porModelo[d.modelo]=porModelo[d.modelo]||{u:0,r:0};porModelo[d.modelo].u++;porModelo[d.modelo].r+=d.brl;});
+  const ranking = Object.entries(porModelo).sort((a,b)=>b[1].u-a[1].u||b[1].r-a[1].r).slice(0,10);
+  const maxU = ranking.length?ranking[0][1].u:1;
+  document.getElementById('pq1').innerHTML = ranking.length?ranking.map(([mod,v])=>
+    `<div class="barra-row"><div class="barra-nome" title="${mod}">${mod}</div>
+     <div class="barra-trilho"><div class="barra-fill" style="width:${(v.u/maxU*100).toFixed(1)}%"></div></div>
+     <div class="barra-valor">${num(v.u)} un. <small>· ${fmt(v.r)}</small></div></div>`).join('')
+    :'<div class="vazio">Nenhuma venda no recorte selecionado.</div>';
+  document.getElementById('pq1-resumo').innerHTML = ranking.length
+    ? `No recorte atual, o modelo <strong>${ranking[0][0]}</strong> lidera com <strong>${num(ranking[0][1].u)} unidades</strong> e receita de <strong>${fmt(ranking[0][1].r)}</strong>.`
+    : '';
+
+  // PQ2
+  const porMes = {};
+  f.forEach(d=>{const m=d.data.slice(0,7);(porMes[m]=porMes[m]||[]).push(d);});
+  const meses = Object.keys(porMes).sort();
+  const maxM = Math.max(1,...meses.map(m=>porMes[m].length));
+  document.getElementById('pq2').innerHTML = meses.map(m=>{
+    const v = porMes[m]; const top = Object.entries(v.reduce((a,d)=>{a[d.modelo]=(a[d.modelo]||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1])[0];
+    const rot = m.slice(5)+'/'+m.slice(2,4);
+    return `<div class="coluna"><div class="coluna-fill" style="height:${(v.length/maxM*100).toFixed(1)}%" title="${num(v.length)} un. · líder: ${top[0]} (${top[1]})"></div><div class="coluna-rotulo">${rot}</div></div>`;
+  }).join('') || '<div class="vazio">Sem vendas no período.</div>';
+  if(meses.length){
+    const total = meses.reduce((s,m)=>s+porMes[m].length,0);
+    const melhor = meses.reduce((a,m)=>porMes[m].length>porMes[a].length?m:a,meses[0]);
+    const brutoMes = porMes[melhor].reduce((s,d)=>s+d.brl,0);
+    document.getElementById('pq2-resumo').innerHTML =
+      `No período, <strong>${num(total)} unidades</strong> foram vendidas em <strong>${meses.length} meses</strong> distintos. O melhor mês foi <strong>${melhor.slice(5)}/${melhor.slice(0,4)}</strong>, com <strong>${num(porMes[melhor].length)} unidades</strong> e receita de <strong>${fmt(brutoMes)}</strong>.`;
+  } else document.getElementById('pq2-resumo').innerHTML='';
+
+  // PQ3
+  const porCidade = {};
+  f.forEach(d=>{const k=d.cidade+'|'+d.estado;(porCidade[k]=porCidade[k]||[]).push(d);});
+  const linhas = Object.entries(porCidade).map(([k,v])=>{
+    const [cidade,uf]=k.split('|');
+    const pm={}; v.forEach(d=>{pm[d.modelo]=pm[d.modelo]||{u:0,r:0};pm[d.modelo].u++;pm[d.modelo].r+=d.brl;});
+    const top=Object.entries(pm).sort((a,b)=>b[1].u-a[1].u||b[1].r-a[1].r)[0];
+    return {cidade,uf,modelo:top[0],u:top[1].u,r:top[1].r,total:v.length,recCidade:v.reduce((s,d)=>s+d.brl,0)};
+  }).sort((a,b)=>b.total-a.total||b.recCidade-a.recCidade);
+  document.getElementById('pq3').innerHTML = linhas.length?
+    `<table><thead><tr><th>Cidade</th><th>UF</th><th>Modelo mais vendido</th><th>Unid. do modelo</th><th>Receita do modelo</th><th>Total da cidade</th></tr></thead><tbody>`+
+    linhas.map(l=>`<tr><td>${l.cidade}</td><td>${l.uf}</td><td class="tag-modelo">${l.modelo}</td><td>${num(l.u)}</td><td>${fmt(l.r)}</td><td>${num(l.total)} un. · ${fmt(l.recCidade)}</td></tr>`).join('')+
+    '</tbody></table>':'<div class="vazio">Nenhuma cidade no recorte.</div>';
+}
+
+['f-modelo','f-ano','f-cidade','f-metodo','f-de','f-ate'].forEach(id=>document.getElementById(id).addEventListener('change',atualizar));
+document.getElementById('btn-limpar').addEventListener('click',()=>{
+  ['f-modelo','f-ano','f-cidade','f-metodo','f-de','f-ate'].forEach(id=>document.getElementById(id).value='');
+  atualizar();
+});
+atualizar();
+</script>
+</body>
+</html>
